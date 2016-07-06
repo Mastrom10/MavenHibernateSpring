@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--suppress SpringSecurityFiltersConfiguredInspection -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:mvc="http://www.springframework.org/schema/mvc"
+             xmlns:sec="http://www.springframework.org/schema/security"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+	<import resource="classpath:service-context.xml"/>
+
+    <mvc:annotation-driven >
+<!--     	<mvc:message-converters> -->
+<!--     		<ref bean="jackson2HttpMessageConverter" /> -->
+<!--     	</mvc:message-converters> -->
+    </mvc:annotation-driven>
+
+    <context:annotation-config/>
+
+    <sec:http entry-point-ref="restAuthenticationEntryPoint">
+        <sec:intercept-url pattern="/**" access="ROLE_ADMIN"/>
+        <sec:custom-filter ref="customFilter" position="FORM_LOGIN_FILTER"/>
+        <sec:logout/>
+    </sec:http>
+
+    <sec:authentication-manager alias="authenticationManager">
+        <sec:authentication-provider ref="simpleAuthenticationProvider"/>
+    </sec:authentication-manager>
+
+    <bean id="customFilter"
+    class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="authenticationSuccessHandler" ref="successHandler"/>
+        <property name="authenticationFailureHandler" ref="failureHandler"/>
+        <property name="passwordParameter" value="password"/>
+        <property name="usernameParameter" value="username"/>
+        <property name="requiresAuthenticationRequestMatcher">
+            <bean class="ar.edu.uai.paradigms.authentication.CustomUrlRequestMatcher">
+                <constructor-arg name="filterProcessesUrl" value="/login" />
+            </bean>
+        </property>
+    </bean>
+    <bean id="restAuthenticationEntryPoint"
+        class="ar.edu.uai.paradigms.authentication.RestAuthenticationEntryPoint"/>
+    <bean id="successHandler"
+        class="ar.edu.uai.paradigms.authentication.SavedRequestAwareAuthenticationSuccessHandler"/>
+    <bean id="simpleAuthenticationProvider"
+        class="ar.edu.uai.paradigms.authentication.SimpleAuthenticationProvider"/>
+    <bean id="failureHandler"
+        class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler"/>
+
+    <bean id="jackson2HttpMessageConverter" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="jsonMessageConverter"/>
+            </list>
+        </property>
+    </bean>
+
+<!--     Configure bean to convert JSON to POJO and vice versa -->
+    <bean id="jsonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>classpath:ar/edu/uai/config.properties</value>
+		</property>
+	</bean>
+	<bean id="personController" class="ar.edu.uai.paradigms.controller.person.PersonController">
+		<constructor-arg name="personService" ref="personService"/>
+		<constructor-arg name="personTranslator" ref="personTranslator"/>
+	</bean>
+	<bean id="personTranslator" class="ar.edu.uai.paradigms.translator.person.PersonTranslator" />
+
+    <bean id="autoController" class="ar.edu.uai.paradigms.controller.auto.AutoController">
+        <constructor-arg name="autoService" ref="autoService"/>
+        <constructor-arg name="autoTranslator" ref="autoTranslator"/>
+    </bean>
+    <bean id="autoTranslator" class="ar.edu.uai.paradigms.translator.auto.AutoTranslator" />
+</beans>

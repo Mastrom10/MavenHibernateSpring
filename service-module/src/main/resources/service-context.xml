@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="classpath:dao-context.xml" />
+	<bean id="personService" class="ar.edu.uai.paradigms.service.impl.PersonServiceImpl">
+        <constructor-arg ref="personDAO" />
+    </bean>
+
+    <bean id="autoService" class="ar.edu.uai.paradigms.service.impl.AutoServiceImpl">
+        <constructor-arg ref="autoDAO" />
+    </bean>
+</beans>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans      http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/tx         http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+    <bean
+            class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location">
+            <value>classpath:config.properties</value>
+        </property>
+    </bean>
+
+    <bean id="personDAO" class="ar.edu.uai.paradigms.dao.PersonDAO" />
+    <bean id="autoDAO" class="ar.edu.uai.paradigms.dao.AutoDAO" />
+
+    <!-- DataSource -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" lazy-init="true" destroy-method="close">
+        <!--<property name="connectionCustomizerClassName" value="com.despegar.bookedia.persistence.dao.base.IsolationLevelC3POCustomizer" />-->
+        <property name="driverClass" value="${ar.edu.uai.persistence.jdbc.driver}" />
+        <property name="jdbcUrl" value="${ar.edu.uai.persistence.jdbc.url}" />
+        <property name="user" value="${ar.edu.uai.persistence.jdbc.user}" />
+        <property name="password" value="${ar.edu.uai.persistence.jdbc.password}" />
+
+        <property name="minPoolSize" value="${ar.edu.uai.persistence.c3p0.minPoolSize}" />
+        <property name="maxPoolSize" value="${ar.edu.uai.persistence.c3p0.maxPoolSize}" />
+        <property name="unreturnedConnectionTimeout" value="${ar.edu.uai.persistence.c3p0.unreturnedConnectionTimeout}" />
+        <property name="debugUnreturnedConnectionStackTraces" value="${ar.edu.uai.persistence.c3p0.debugUnreturnedConnectionStackTraces}" />
+        <property name="checkoutTimeout" value="${ar.edu.uai.persistence.c3p0.checkoutTimeout}" />
+        <property name="initialPoolSize" value="${ar.edu.uai.persistence.c3p0.minPoolSize}" />
+        <property name="maxStatements" value="${ar.edu.uai.persistence.c3p0.maxStatements}" />
+        <property name="idleConnectionTestPeriod" value="${ar.edu.uai.persistence.c3p0.idleConnectionTestPeriod}" />
+        <property name="preferredTestQuery" value="${ar.edu.uai.persistence.c3p0.preferredTestQuery}" />
+        <property name="testConnectionOnCheckout" value="${ar.edu.uai.persistence.c3p0.testConnectionOnCheckout}" />
+        <property name="acquireRetryAttempts" value="${ar.edu.uai.persistence.c3p0.acquireRetryAttempts}" />
+        <property name="breakAfterAcquireFailure" value="${ar.edu.uai.persistence.c3p0.breakAfterAcquireFailure}" />
+    </bean>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceUnitName" value="paradigms-persistence-unit"/>
+        <property name="packagesToScan" value="ar.edu.uai.model"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="persistenceProviderClass" value="org.hibernate.jpa.HibernatePersistenceProvider" />
+
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">${ar.edu.uai.persistence.hibernate.hbm2ddl.auto}</prop>
+                <prop key="hibernate.dialect">${ar.edu.uai.persistence.hibernate.dialect}</prop>
+                <prop key="hibernate.show_sql">${ar.edu.uai.persistence.hibernate.show_sql}</prop>
+                <prop key="hibernate.default_batch_fetch_size">${ar.edu.uai.persistence.hibernate.default.batch.fetch.size}</prop>
+                <prop key="hibernate.max_fetch_depth">${ar.edu.uai.persistence.hibernate.max.fetch.depth}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <bean id="transactionInterceptor"
+          class="org.springframework.transaction.interceptor.TransactionInterceptor">
+        <property name="transactionManager" ref="transactionManager" />
+        <property name="transactionAttributeSource">
+            <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+        </property>
+    </bean>
+
+    <bean id="transactionAdvisor"
+          class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
+        <constructor-arg ref="transactionInterceptor" />
+    </bean>
+
+    <bean id="transactionTemplate"
+          class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="transactionManager" ref="transactionManager" />
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+</beans>

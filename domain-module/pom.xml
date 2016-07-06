@@ -1,0 +1,66 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ar.edu.uai.paradigms</groupId>
+		<artifactId>ParadigmsExample</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>domain-module</artifactId>
+	<packaging>jar</packaging>
+	<dependencies>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+	</dependencies>
+	<profiles>
+		<profile>
+			<id>generate_schema_ddl</id>
+			<properties>
+				<database.schema.generation.output.path>
+					${project.build.directory}/database_creation.sql
+				</database.schema.generation.output.path>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>de.juplo</groupId>
+						<artifactId>hibernate-maven-plugin</artifactId>
+						<version>1.0.4</version>
+						<dependencies>
+							<dependency>
+								<groupId>org.hibernate</groupId>
+								<artifactId>hibernate-core</artifactId>
+								<version>${hibernate.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.hibernate</groupId>
+								<artifactId>hibernate-envers</artifactId>
+								<version>${hibernate.version}</version>
+							</dependency>
+						</dependencies>
+						<executions>
+							<execution>
+								<goals>
+									<goal>export</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<hibernateDialect>org.hibernate.dialect.MySQLDialect</hibernateDialect>
+							<driverClassName>com.mysql.jdbc.Driver</driverClassName>
+							<target>SCRIPT</target>
+							<type>CREATE</type>
+							<envers>true</envers>
+							<outputFile>${database.schema.generation.output.path}</outputFile>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
+
+</project>
