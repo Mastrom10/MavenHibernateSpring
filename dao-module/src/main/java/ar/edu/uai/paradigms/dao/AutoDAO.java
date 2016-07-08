@@ -49,20 +49,20 @@ public class AutoDAO implements PersistentDAO<Auto, Integer, AutoCriteria> {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Auto> query = cb.createQuery(Auto.class);
-        Root<Auto> person = query.from(Auto.class);
-        query.select(person);
+        Root<Auto> auto = query.from(Auto.class);
+        query.select(auto);
         List<Predicate> predicates = new ArrayList<Predicate>();
 
         if(autoCriteria.getMarca() != null) {
-            predicates.add(cb.and(cb.like(person.<String>get("marca"), "%" + autoCriteria.getMarca() + "%")));
+            predicates.add(cb.and(cb.like(auto.<String>get("marca"), "%" + autoCriteria.getMarca() + "%")));
         }
 
         if(autoCriteria.getMinModelo() != null) {
-            predicates.add(cb.and(cb.ge(person.<Integer>get("modelo"), autoCriteria.getMinModelo())));
+            predicates.add(cb.and(cb.ge(auto.<Integer>get("modelo"), autoCriteria.getMinModelo())));
         }
 
         if(autoCriteria.getMaxModelo() != null) {
-            predicates.add(cb.and(cb.le(person.<Integer>get("modelo"), autoCriteria.getMaxModelo())));
+            predicates.add(cb.and(cb.le(auto.<Integer>get("modelo"), autoCriteria.getMaxModelo())));
         }
         if(!predicates.isEmpty()) {
             query.where(predicates.toArray(new Predicate[predicates.size()]));

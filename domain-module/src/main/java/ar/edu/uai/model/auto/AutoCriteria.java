@@ -29,7 +29,7 @@ public class AutoCriteria {
 
     @Override
     public String toString() {
-        return "PersonCriteria {" +
+        return "AutoCriteria {" +
                 "marca='" + marca + '\'' +
                 ", minModelo=" + minModelo +
                 ", maxModelo=" + maxModelo +

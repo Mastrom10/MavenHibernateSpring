@@ -43,7 +43,7 @@ public class AutoCriteriaDTO {
 
     @Override
     public String toString() {
-        return "PersonCriteriaDTO{" +
+        return "AutoCriteriaDTO{" +
                 "marca='" + marca + '\'' +
                 ", minModelo=" + minModelo +
                 ", maxModelo=" + maxModelo +
