@@ -2,6 +2,7 @@ package ar.edu.uai.paradigms.dao;
 
 import ar.edu.uai.model.person.Person;
 import ar.edu.uai.model.person.PersonCriteria;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,8 +20,10 @@ import java.util.List;
 public class PersonDAO implements PersistentDAO<Person, Integer, PersonCriteria> {
 
     @PersistenceContext(unitName = "paradigms-persistence-unit")
+    //@PersistenceContext
     private EntityManager entityManager;
 
+    @Transactional
     @Override
     public Person create(Person person) {
         this.entityManager.persist(person);
@@ -32,11 +35,13 @@ public class PersonDAO implements PersistentDAO<Person, Integer, PersonCriteria>
         return this.entityManager.find(Person.class, id);
     }
 
+    @Transactional
     @Override
     public Person update(Person person) {
         return this.entityManager.merge(person);
     }
 
+    @Transactional
     @Override
     public void delete(Integer id) {
         this.entityManager.remove(this.retrieve(id));

@@ -74,6 +74,7 @@ public class PersonController {
         return new ResponseEntity<PersonDTO>(HttpStatus.NO_CONTENT);
     }
 
+
     @RequestMapping(method = RequestMethod.DELETE, value = "/{identifier}")
     public
     @ResponseBody

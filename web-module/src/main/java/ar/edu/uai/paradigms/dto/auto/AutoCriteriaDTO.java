@@ -47,8 +47,8 @@ public class AutoCriteriaDTO {
                 "marca='" + marca + '\'' +
                 ", minModelo=" + minModelo +
                 ", maxModelo=" + maxModelo +
-                '}';
-    }
+'}';
+        }
 
 
-}
+        }

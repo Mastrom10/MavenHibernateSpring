@@ -2,6 +2,7 @@ package ar.edu.uai.paradigms.dao;
 
 import ar.edu.uai.model.auto.Auto;
 import ar.edu.uai.model.auto.AutoCriteria;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,10 +20,11 @@ import java.util.List;
 
 public class AutoDAO implements PersistentDAO<Auto, Integer, AutoCriteria> {
 
-
     @PersistenceContext(unitName = "paradigms-persistence-unit")
+    //@PersistenceContext
     private EntityManager entityManager;
 
+    @Transactional
     @Override
     public Auto create(Auto auto) {
         this.entityManager.persist(auto);
@@ -34,11 +36,13 @@ public class AutoDAO implements PersistentDAO<Auto, Integer, AutoCriteria> {
         return this.entityManager.find(Auto.class, id);
     }
 
+    @Transactional
     @Override
     public Auto update(Auto auto) {
         return this.entityManager.merge(auto);
     }
 
+    @Transactional
     @Override
     public void delete(Integer id) {
         this.entityManager.remove(this.retrieve(id));
